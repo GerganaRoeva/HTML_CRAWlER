@@ -1,6 +1,6 @@
 import {readFileSync} from 'fs';
 import { Stack } from "./dataStructures.js";
-
+import {customTrim} from "./helpers.js";
 class Node {
   constructor(type, tagName = null, attributes = {}, children = []) {
     this.type = type;
@@ -18,7 +18,7 @@ function parseHTML(html) {
 
   for (let i = 0; i < html.length; i++) {
     if (html[i] === "<") {
-      if (currentText.trim()) {
+      if (customTrim(currentText)) {
         stack.peek().children.push(
           new Node("text", null, {}, currentText)
         );
