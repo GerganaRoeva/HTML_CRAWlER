@@ -1,4 +1,5 @@
-const fs = require("fs");
+import {readFileSync} from 'fs';
+import { Stack } from "./dataStructures.js";
 
 class Node {
   constructor(type, tagName = null, attributes = {}, children = []) {
@@ -11,13 +12,14 @@ class Node {
 
 function parseHTML(html) {
   const root = new Node("element", "root");
-  const stack = [root];
+  const stack = new Stack();
+  stack.push(root);
   let currentText = "";
 
   for (let i = 0; i < html.length; i++) {
     if (html[i] === "<") {
       if (currentText.trim()) {
-        stack[stack.length - 1].children.push(
+        stack.peek().children.push(
           new Node("text", null, {}, currentText)
         );
       }
@@ -38,7 +40,8 @@ function parseHTML(html) {
           i++;
         }
         const newNode = new Node("element", tagName);
-        stack[stack.length - 1].children.push(newNode);
+        stack.peek().children.push(newNode);
+
         stack.push(newNode);
 
         while (html[i] !== ">") i++;
@@ -67,7 +70,7 @@ function printNode(node, indent = 0) {
 
 function readHTMLFile(filePath) {
   try {
-    return fs.readFileSync(filePath, "utf-8");
+    return readFileSync(filePath, "utf-8");
   } catch (error) {
     console.error(`Error reading file: ${error.message}`);
     process.exit(1);
