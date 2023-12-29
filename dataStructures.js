@@ -1,20 +1,23 @@
 export class Stack {
+  #items;
+  #top;
+
   constructor() {
-    this.items = [];
-    this.top = -1;
+    this.#items = [];
+    this.#top = -1;
   }
 
   push(element) {
-    this.top++;
-    this.items[this.top] = element;
+    this.#top++;
+    this.#items[this.#top] = element;
   }
 
   pop() {
     if (this.isEmpty()) {
       return null;
     }
-    const poppedElement = this.items[this.top];
-    this.top--;
+    const poppedElement = this.#items[this.#top];
+    this.#top--;
 
     return poppedElement;
   }
@@ -23,19 +26,19 @@ export class Stack {
     if (this.isEmpty()) {
       return null;
     }
-    return this.items[this.top];
+    return this.#items[this.#top];
   }
 
   isEmpty() {
-    return this.top === -1;
+    return this.#top === -1;
   }
 
   size() {
-    return this.top + 1;
+    return this.#top + 1;
   }
 
   clear() {
-    this.items = [];
-    this.top = -1;
+    this.#items = [];
+    this.#top = -1;
   }
 }
