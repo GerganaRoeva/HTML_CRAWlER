@@ -1,8 +1,6 @@
 import { Stack, TreeNode } from "./dataStructures.js";
 import { customTrim, isValidTagName, isTagSelfClosed } from "./helpers.js";
 
-
-
 function parseHTML(html) {
   const root = new TreeNode("element", "root");
   const stack = new Stack();
@@ -66,6 +64,5 @@ function parseHTML(html) {
 
   return root;
 }
-
 
 export { parseHTML };
