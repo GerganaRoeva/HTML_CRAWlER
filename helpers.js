@@ -1,4 +1,8 @@
-export function customTrim(str) {
+import { selfClosingTags } from "./tagLists/selfClosingTags.js";
+import { validTagNames } from "./tagLists/validTagNAmes.js";
+
+
+function customTrim(str) {
   let start = 0;
   let end = str.length - 1;
 
@@ -21,3 +25,13 @@ export function customTrim(str) {
 function isWhitespace(char) {
   return char === " " || char === "\t" || char === "\n" || char === "\r";
 }
+
+function isValidTagName(tagName) {
+  return validTagNames.includes(tagName);
+}
+
+function isTagSelfClosed(tagName){
+  return selfClosingTags.includes(tagName);
+}
+
+export { customTrim, isValidTagName, isTagSelfClosed };

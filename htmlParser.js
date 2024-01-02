@@ -1,6 +1,7 @@
 import { readFileSync } from "fs";
 import { Stack } from "./dataStructures.js";
-import { customTrim } from "./helpers.js";
+import { customTrim, isValidTagName, isTagSelfClosed } from "./helpers.js";
+
 
 class Node {
   constructor(type, tagName = null, attributes = {}, children = []) {
@@ -30,6 +31,15 @@ function parseHTML(html) {
           tagName += html[i];
           i++;
         }
+
+        if (stack.peek().tagName !== tagName) {
+          throw new Error(
+            `Tag mismatch: Expected </${
+              stack.peek().tagName
+            }> but found </${tagName}>`
+          );
+        }
+
         stack.pop();
       } else {
         let tagName = "";
@@ -38,16 +48,29 @@ function parseHTML(html) {
           tagName += html[i];
           i++;
         }
-        const newNode = new Node("element", tagName);
-        stack.peek().children.push(newNode);
 
-        stack.push(newNode);
+        if (!isTagSelfClosed(tagName)) {
+          if (!isValidTagName(tagName)) {
+            throw new Error(`Invalid tag name: <${tagName}>`);
+          }
+
+          const newNode = new Node("element", tagName);
+          stack.peek().children.push(newNode);
+          stack.push(newNode);
+        } else {
+          const newNode = new Node("element", tagName);
+          stack.peek().children.push(newNode);
+        }
 
         while (html[i] !== ">") i++;
       }
     } else {
       currentText += html[i];
     }
+  }
+
+  if (stack.size() > 1) {
+    throw new Error("HTML parsing error: Tags not properly closed");
   }
 
   return root;
