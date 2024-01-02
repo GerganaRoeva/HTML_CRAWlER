@@ -1,8 +1,7 @@
 import { Stack, TreeNode } from "./dataStructures.js";
 import { customTrim, isValidTagName, isTagSelfClosed } from "./helpers.js";
 
-function parseHTML(html) {
-  const root = new TreeNode("element", "root");
+function parseHTML(html, root) {
   const stack = new Stack();
   stack.push(root);
   let currentText = "";

@@ -44,29 +44,16 @@ class Stack {
 }
 
 class TreeNode {
-  #type;
-  #tagName;
-  #attributes;
-  #children;
+  // #type;
+  // #tagName;
+  // #attributes;
+  // #children
 
   constructor(type, tagName = null, attributes = {}, children = []) {
-    this.#type = type;
-    this.#tagName = tagName;
-    this.#attributes = attributes;
-    this.#children = children;
-  }
-
-  // addChild(childNode) {
-  //   this.#children.push(childNode);
-  // }
-
-  findChildByValue(targetValue) {
-    for (const child of this.#children) {
-      if (child.value === targetValue) {
-        return child;
-      }
-    }
-    return null;
+    this.type = type;
+    this.tagName = tagName;
+    this.attributes = attributes;
+    this.children = children;
   }
 }
 export { Stack, TreeNode };
