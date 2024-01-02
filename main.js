@@ -19,8 +19,9 @@ var inputArr = customSplit(input, " ");
 
 switch (inputArr[command]) {
   case "PRINT":
-    var targetNode = relativePath(parsedHTML, inputArr[path]);
-    console.log(targetNode)
+    var targetNodes = relativePath(parsedHTML, inputArr[path]);
+
+    // console.log(targetNodes);
     break;
   case "SET":
   case "COPY":
