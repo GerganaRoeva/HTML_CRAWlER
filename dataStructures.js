@@ -51,13 +51,17 @@ class TreeNode {
     this.children = children;
   }
 
+  addChild(childNode) {
+    this.children.push(childNode);
+  }
+
   findChildByValue(targetValue) {
     for (const child of this.children) {
-        if (child.value === targetValue) {
-            return child;
-        }
+      if (child.value === targetValue) {
+        return child;
+      }
     }
     return null;
-}
+  }
 }
 export { Stack, TreeNode };
