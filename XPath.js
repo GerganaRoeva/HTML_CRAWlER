@@ -1,5 +1,5 @@
 import { customSplit, customTrim } from "./helpers.js";
-// PRINT "//html/body/p"
+// 'PRINT "//html/body/table/tr/td"';
 
 var result = [];
 
@@ -12,30 +12,28 @@ function dfs(node, tagName) {
       dfs(child, tagName);
     }
   }
-
   return result;
 }
 
-function findNodeByPath(node, path) {
-  if (!node) {
-    return null;
-  }
-
+function findNodeByPath(nodes, path) {
   if (path.length === 1) {
-    dfs(node, path[0]);
+    for (const node of nodes) {
+      dfs(node, path[0]);
+    }
+    return result;
   }
-
   const nextNodeTag = path.shift();
 
-  var nextNode = null;
-  for (const child of node.children) {
-    if (child.tagName === nextNodeTag) {
-      var nextNode = child;
-      break;
+  var nextNodes = [];
+  for (const node of nodes) {
+    for (const child of node.children) {
+      if (child.tagName === nextNodeTag) {
+        nextNodes.push(child);
+      }
     }
   }
 
-  return findNodeByPath(nextNode, path);
+  return findNodeByPath(nextNodes, path);
 }
 
 function relativePath(node, path) {
@@ -47,11 +45,8 @@ function relativePath(node, path) {
     parts.shift();
     parts.shift();
   }
-  findNodeByPath(node, parts);
-
-  //   console.log(result);
-
-  return result;
+  var nodes = [node];
+  return findNodeByPath(nodes, parts);
 }
 
 export { relativePath };

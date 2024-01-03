@@ -21,7 +21,7 @@ switch (inputArr[command]) {
   case "PRINT":
     var targetNodes = relativePath(parsedHTML, inputArr[path]);
 
-    // console.log(targetNodes);
+    console.log(targetNodes);
     break;
   case "SET":
   case "COPY":
