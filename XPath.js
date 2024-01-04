@@ -19,7 +19,7 @@ function getTagNameAndPosition(text) {
 
 function dfs(node, tagName, depth) {
   if (tagName === "any") {
-    result.push(node);
+    result.push(node.children);
   } else {
     if (node.tagName === tagName) {
       result.push(node);
@@ -42,14 +42,15 @@ function findNodeByPath(nodes, path, depth = 0) {
     if (tagAndPos[0] === "*") {
       tagAndPos[0] = "any";
     }
+
     if (path[0].includes("[")) {
       tagAndPos = getTagNameAndPosition(path[0]);
     }
 
     for (const node of nodes) {
-      // console.log(node)
       dfs(node, tagAndPos[0], depth);
     }
+
     if (path[0].includes("[")) {
       return result[tagAndPos[1]];
     } else return result;
