@@ -4,6 +4,21 @@ import { customSplit, customTrim } from "./helpers.js";
 let result = [];
 let maxDepth;
 
+function getTagNameAndPosition(text) {
+  let nextNodeTag = text;
+  let position = -1;
+  position =
+    parseInt(
+      nextNodeTag.substring(
+        nextNodeTag.indexOf("[") + 1,
+        nextNodeTag.indexOf("]")
+      )
+    ) - 1;
+  nextNodeTag = nextNodeTag.substring(0, nextNodeTag.indexOf("["));
+//   console.log([nextNodeTag, position]);
+  return [nextNodeTag, position];
+}
+
 function dfs(node, tagName, depth) {
   if (node.tagName === tagName) {
     result.push(node);
@@ -17,25 +32,46 @@ function dfs(node, tagName, depth) {
 }
 
 function findNodeByPath(nodes, path, depth = 0) {
+  let position = -1;
+  let tagAndPos = [path[0], position];
+
   if (path.length === 1) {
-    for (const node of nodes) {
-      dfs(node, path[0], depth);
+    if (path[0].includes("[")) {
+      tagAndPos = getTagNameAndPosition(path[0]);
     }
-    return result;
+
+    for (const node of nodes) {
+      dfs(node, tagAndPos[0], depth);
+    }
+    if (path[0].includes("[")) {
+      console.log(tagAndPos[1]);
+      return result[tagAndPos[1]];
+    } else return result;
   }
-  const nextNodeTag = path.shift();
+  tagAndPos[0] = path.shift();
   depth += 1;
 
+  if (tagAndPos[0].includes("["))
+    tagAndPos = getTagNameAndPosition(tagAndPos[0]);
+
+
   let nextNodes = [];
+  let nodesToSend = [];
   for (const node of nodes) {
     for (const child of node.children) {
-      if (child.tagName === nextNodeTag) {
+      if (child.tagName === tagAndPos[0]) {
         nextNodes.push(child);
       }
     }
   }
 
-  return findNodeByPath(nextNodes, path, depth);
+  if (tagAndPos[1] != -1) {
+    nodesToSend.push(nextNodes[tagAndPos[1]]);
+
+  } else {
+    nodesToSend = nextNodes;
+  }
+  return findNodeByPath(nodesToSend, path, depth);
 }
 
 function relativePath(node, path) {
