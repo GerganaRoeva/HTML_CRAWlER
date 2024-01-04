@@ -1,5 +1,4 @@
 import { customSplit, customTrim } from "./helpers.js";
-// 'PRINT "//html/body/table/tr/td"';
 
 let result = [];
 let maxDepth;
@@ -15,19 +14,23 @@ function getTagNameAndPosition(text) {
       )
     ) - 1;
   nextNodeTag = nextNodeTag.substring(0, nextNodeTag.indexOf("["));
-//   console.log([nextNodeTag, position]);
   return [nextNodeTag, position];
 }
 
 function dfs(node, tagName, depth) {
-  if (node.tagName === tagName) {
+  if (tagName === "any") {
     result.push(node);
+  } else {
+    if (node.tagName === tagName) {
+      result.push(node);
+    }
   }
   if (node.type != "text") {
     for (const child of node.children) {
       if (depth <= maxDepth) dfs(child, tagName);
     }
   }
+
   return result;
 }
 
@@ -36,15 +39,18 @@ function findNodeByPath(nodes, path, depth = 0) {
   let tagAndPos = [path[0], position];
 
   if (path.length === 1) {
+    if (tagAndPos[0] === "*") {
+      tagAndPos[0] = "any";
+    }
     if (path[0].includes("[")) {
       tagAndPos = getTagNameAndPosition(path[0]);
     }
 
     for (const node of nodes) {
+      // console.log(node)
       dfs(node, tagAndPos[0], depth);
     }
     if (path[0].includes("[")) {
-      console.log(tagAndPos[1]);
       return result[tagAndPos[1]];
     } else return result;
   }
@@ -53,7 +59,6 @@ function findNodeByPath(nodes, path, depth = 0) {
 
   if (tagAndPos[0].includes("["))
     tagAndPos = getTagNameAndPosition(tagAndPos[0]);
-
 
   let nextNodes = [];
   let nodesToSend = [];
@@ -67,7 +72,6 @@ function findNodeByPath(nodes, path, depth = 0) {
 
   if (tagAndPos[1] != -1) {
     nodesToSend.push(nextNodes[tagAndPos[1]]);
-
   } else {
     nodesToSend = nextNodes;
   }
