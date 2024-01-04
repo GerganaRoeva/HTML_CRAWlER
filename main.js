@@ -13,7 +13,7 @@ const root = new TreeNode("element", "root");
 
 const parsedHTML = parseHTML(htmlContent, root);
 
-var input = 'PRINT "//html/body/p"';
+var input = 'PRINT "//html/body/table/tr/td"';
 
 var inputArr = customSplit(input, " ");
 
