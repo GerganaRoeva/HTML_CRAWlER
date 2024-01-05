@@ -24,6 +24,7 @@ function attributes(text) {
 }
 
 function dfs(node, tagName, atr, depth) {
+//   console.log(node);
   if (tagName === "any") {
     result.push(node.children);
   } else {
@@ -65,6 +66,8 @@ function findNodeByPath(nodes, path, depth = 0) {
         attributFlag = false;
       }
     }
+    // console.log(nodes);
+
     for (const node of nodes) {
       dfs(node, tagAndPos[0], atr, depth);
     }
@@ -75,38 +78,52 @@ function findNodeByPath(nodes, path, depth = 0) {
   }
 
   tagAndPos[0] = path.shift();
+
   depth += 1;
 
   if (tagAndPos[0].includes("[")) {
-    tagAndPos[0] = getTagName(tagAndPos[0]);
-    if (path[0][path[0].indexOf("[") + 1] === "@") {
-      atr = attributes(path[0]);
+    // console.log(tagAndPos[0])
+
+    if (tagAndPos[0][tagAndPos[0].indexOf("[") + 1] === "@") {
+      atr = attributes(tagAndPos[0]);
       attributFlag = true;
     } else {
-      tagAndPos[1] = getPosition(path[0]);
+
+      tagAndPos[1] = getPosition(tagAndPos[0] );
+    // console.log(tagAndPos[1])
+
       attributFlag = false;
     }
+    tagAndPos[0] = getTagName(tagAndPos[0]);
   }
 
   let nextNodes = [];
   let nodesToSend = [];
+
   for (const node of nodes) {
     for (const child of node.children) {
       if (child.tagName === tagAndPos[0]) {
         if (attributFlag) {
-          if (atr === child.attribut) nextNodes.push(child);
+          if (atr === child.attributes) {
+            nextNodes.push(child);
+          }
         } else {
           nextNodes.push(child);
         }
       }
     }
   }
+  
 
   if (tagAndPos[1] != -1) {
+    // console.log(tagAndPos[1]);
     nodesToSend.push(nextNodes[tagAndPos[1]]);
   } else {
     nodesToSend = nextNodes;
   }
+
+    // console.log(nodesToSend);
+
   return findNodeByPath(nodesToSend, path, depth);
 }
 
