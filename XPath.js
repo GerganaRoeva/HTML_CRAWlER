@@ -2,35 +2,46 @@ import { customSplit, customTrim } from "./helpers.js";
 
 let result = [];
 let maxDepth;
+let attributFlag = false;
+let atr = "";
 
-function getTagNameAndPosition(text) {
-  let nextNodeTag = text;
-  let position = -1;
-  position =
-    parseInt(
-      nextNodeTag.substring(
-        nextNodeTag.indexOf("[") + 1,
-        nextNodeTag.indexOf("]")
-      )
-    ) - 1;
-  nextNodeTag = nextNodeTag.substring(0, nextNodeTag.indexOf("["));
-  return [nextNodeTag, position];
+function getTagName(text) {
+  return text.substring(0, text.indexOf("["));
 }
 
-function dfs(node, tagName, depth) {
+function getPosition(text) {
+  return parseInt(text.substring(text.indexOf("[") + 1, text.indexOf("]"))) - 1;
+}
+
+function attributes(text) {
+  let attribut = "";
+  for (let i = text.indexOf("[") + 2; i < text.length; i++) {
+    if (text[i] === "]") break;
+    attribut += text[i];
+  }
+
+  return attribut;
+}
+
+function dfs(node, tagName, atr, depth) {
   if (tagName === "any") {
     result.push(node.children);
   } else {
     if (node.tagName === tagName) {
-      result.push(node);
+      if (attributFlag) {
+        if (atr === node.attributes) {
+          result.push(node);
+        }
+      } else {
+        result.push(node);
+      }
     }
   }
   if (node.type != "text") {
     for (const child of node.children) {
-      if (depth <= maxDepth) dfs(child, tagName);
+      if (depth <= maxDepth) dfs(child, tagName, atr);
     }
   }
-
   return result;
 }
 
@@ -44,29 +55,49 @@ function findNodeByPath(nodes, path, depth = 0) {
     }
 
     if (path[0].includes("[")) {
-      tagAndPos = getTagNameAndPosition(path[0]);
-    }
+      tagAndPos[0] = getTagName(path[0]);
+      if (path[0][path[0].indexOf("[") + 1] === "@") {
+        atr = attributes(path[0]);
 
+        attributFlag = true;
+      } else {
+        tagAndPos[1] = getPosition(path[0]);
+        attributFlag = false;
+      }
+    }
     for (const node of nodes) {
-      dfs(node, tagAndPos[0], depth);
+      dfs(node, tagAndPos[0], atr, depth);
     }
 
-    if (path[0].includes("[")) {
+    if (path[0].includes("[") && !path[0].includes("@")) {
       return result[tagAndPos[1]];
     } else return result;
   }
+
   tagAndPos[0] = path.shift();
   depth += 1;
 
-  if (tagAndPos[0].includes("["))
-    tagAndPos = getTagNameAndPosition(tagAndPos[0]);
+  if (tagAndPos[0].includes("[")) {
+    tagAndPos[0] = getTagName(tagAndPos[0]);
+    if (path[0][path[0].indexOf("[") + 1] === "@") {
+      atr = attributes(path[0]);
+      attributFlag = true;
+    } else {
+      tagAndPos[1] = getPosition(path[0]);
+      attributFlag = false;
+    }
+  }
 
   let nextNodes = [];
   let nodesToSend = [];
   for (const node of nodes) {
     for (const child of node.children) {
       if (child.tagName === tagAndPos[0]) {
-        nextNodes.push(child);
+        if (attributFlag) {
+          if (atr === child.attribut) nextNodes.push(child);
+        } else {
+          nextNodes.push(child);
+        }
       }
     }
   }

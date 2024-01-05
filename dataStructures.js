@@ -49,7 +49,7 @@ class TreeNode {
   // #attributes;
   // #children
 
-  constructor(type, tagName = null, attributes = {}, children = []) {
+  constructor(type, tagName = null, attributes = "", children = []) {
     this.type = type;
     this.tagName = tagName;
     this.attributes = attributes;

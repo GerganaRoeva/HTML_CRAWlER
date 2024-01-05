@@ -36,21 +36,26 @@ function parseHTML(html, root) {
           tagName += html[i];
           i++;
         }
+        let atribute = "";
+
+        while (html[i] !== ">") {
+          atribute += html[i];
+          i++;
+        }
+        atribute = customTrim(atribute);
 
         if (!isTagSelfClosed(tagName)) {
           if (!isValidTagName(tagName)) {
             throw new Error(`Invalid tag name: <${tagName}>`);
           }
 
-          const newNode = new TreeNode("element", tagName);
+          const newNode = new TreeNode("element", tagName, atribute);
           stack.peek().children.push(newNode);
           stack.push(newNode);
         } else {
-          const newNode = new TreeNode("element", tagName);
+          const newNode = new TreeNode("element", tagName, atribute);
           stack.peek().children.push(newNode);
         }
-
-        while (html[i] !== ">") i++;
       }
     } else {
       currentText += html[i];
