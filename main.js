@@ -30,6 +30,7 @@ rl.on("line", (input) => {
   if (inputArr[0] === "SAVE") {
     let list = [parsedHTML];
     writeInFile(treeToHTML(list));
+    return;
   }
 
   if (inputArr.length > 1) {
@@ -75,7 +76,7 @@ rl.on("line", (input) => {
           for (const node of targetNodes) {
             for (const child of node.children) {
               if (child.type === "text") {
-                newVal = child.children();
+                newVal = child.children;
               } else {
                 newVal = child;
               }
@@ -86,7 +87,7 @@ rl.on("line", (input) => {
             for (const child of node.children) {
               if (child.type === "text") {
                 child.children = newVal;
-                console.log(child.children());
+                console.log(child.children);
               } else {
                 child = newVal;
                 console.log(child);
@@ -94,7 +95,6 @@ rl.on("line", (input) => {
             }
           }
           break;
-
         default:
           console.log("Invalid command");
       }

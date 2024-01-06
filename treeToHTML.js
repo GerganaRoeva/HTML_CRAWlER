@@ -7,21 +7,21 @@ function treeToHTML(tree) {
   let htmlStrings = "";
   for (const node of tree) {
 
-    if (node.type() === "text") {
-      htmlStrings = customConcat(htmlStrings, node.children());
+    if (node.type === "text") {
+      htmlStrings = customConcat(htmlStrings, node.children);
     } else {
-      const childrenHtml = treeToHTML(node.children());
+      const childrenHtml = treeToHTML(node.children);
 
-      if (node.type() === "element") {
-        if (!isTagSelfClosed(node.tagName())) {
+      if (node.type === "element") {
+        if (!isTagSelfClosed(node.tagName)) {
           htmlStrings = customConcat(
             htmlStrings,
-            `<${node.tagName()} ${node.attributes()}>${childrenHtml()}</${node.tagName()}>`
+            `<${node.tagName} ${node.attributes}>${childrenHtml}</${node.tagName}>`
           );
         } else {
           htmlStrings = customConcat(
             htmlStrings,
-            `<${node.tagName()} ${node.attributes()}>`
+            `<${node.tagName} ${node.attributes}>`
           );
         }
       }
