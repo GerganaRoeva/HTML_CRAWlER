@@ -5,6 +5,7 @@ function parseHTML(html, root) {
   const stack = new Stack();
   stack.push(root);
   let currentText = "";
+  // console.log(root)
 
   for (let i = 0; i < html.length; i++) {
     if (html[i] === "<") {
@@ -41,7 +42,7 @@ function parseHTML(html, root) {
         while (html[i] !== ">") {
           atribute += html[i];
           i++;
-        }
+        } 
         atribute = customTrim(atribute);
 
         if (!isTagSelfClosed(tagName)) {

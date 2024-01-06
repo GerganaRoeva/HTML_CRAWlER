@@ -1,4 +1,9 @@
-import { customSplit, customTrim } from "./helpers.js";
+import {
+  customSplit,
+  customSubstring,
+  customIncludes,
+  customIndexOf,
+} from "./helpers.js";
 
 let result = [];
 let maxDepth;
@@ -6,16 +11,24 @@ let attributFlag = false;
 let atr = "";
 
 function getTagName(text) {
-  return text.substring(0, text.indexOf("["));
+  return customSubstring(text, 0, customIndexOf(text, "["));
 }
 
 function getPosition(text) {
-  return parseInt(text.substring(text.indexOf("[") + 1, text.indexOf("]"))) - 1;
+  return (
+    parseInt(
+      customSubstring(
+        text,
+        customIndexOf(text, "[") + 1,
+        customIndexOf(text, "]")
+      )
+    ) - 1
+  );
 }
 
 function attributes(text) {
   let attribut = "";
-  for (let i = text.indexOf("[") + 2; i < text.length; i++) {
+  for (let i = customIndexOf(text, "[") + 2; i < text.length; i++) {
     if (text[i] === "]") break;
     attribut += text[i];
   }
@@ -31,12 +44,15 @@ function dfs(node, tagName, atr, depth) {
       } else result.push(child);
     }
   } else {
-    for (const child of node.children)
+    // console.log(node)
+    for (const child of node.children) {
+      // console.log(node.children())
       if (child.tagName === tagName) {
-        // console.log(child.tagName);
-
-        // console.log(child.tagName);
         if (attributFlag) {
+      // console.log(atr)
+      // console.log(child.attributes)
+
+
           if (atr === child.attributes) {
             result.push(child);
           }
@@ -44,6 +60,7 @@ function dfs(node, tagName, atr, depth) {
           result.push(child);
         }
       }
+    }
   }
   depth += depth;
   if (node.type != "text") {
@@ -67,22 +84,20 @@ function findNodeByPath(nodes, path, depth = 0) {
 
     if (path[0].includes("[")) {
       tagAndPos[0] = getTagName(path[0]);
-      if (path[0][path[0].indexOf("[") + 1] === "@") {
+      if (path[0][customIndexOf(path[0], "[") + 1] === "@") {
         atr = attributes(path[0]);
-
         attributFlag = true;
       } else {
         tagAndPos[1] = getPosition(path[0]);
         attributFlag = false;
       }
     }
-    // console.log(tagAndPos[0]);
 
     for (const node of nodes) {
       dfs(node, tagAndPos[0], atr, depth);
     }
 
-    if (path[0].includes("[") && !path[0].includes("@")) {
+    if (customIncludes(path[0], "[") && !customIncludes(path[0], "@")) {
       let list = [];
       list.push(result[tagAndPos[1]]);
       return list;
@@ -93,17 +108,12 @@ function findNodeByPath(nodes, path, depth = 0) {
 
   depth += 1;
 
-  //   console.log(depth);
-
-  if (tagAndPos[0].includes("[")) {
-    // console.log(tagAndPos[0])
-
-    if (tagAndPos[0][tagAndPos[0].indexOf("[") + 1] === "@") {
+  if (customIncludes(tagAndPos[0], "[")) {
+    if (tagAndPos[0][customIndexOf(tagAndPos[0], "[") + 1] === "@") {
       atr = attributes(tagAndPos[0]);
       attributFlag = true;
     } else {
       tagAndPos[1] = getPosition(tagAndPos[0]);
-      // console.log(tagAndPos[1])
 
       attributFlag = false;
     }
@@ -116,7 +126,6 @@ function findNodeByPath(nodes, path, depth = 0) {
   for (const node of nodes) {
     for (const child of node.children) {
       if (child.tagName === tagAndPos[0]) {
-        // console.log(child.tagName);
         if (attributFlag) {
           if (atr === child.attributes) {
             nextNodes.push(child);
@@ -133,18 +142,21 @@ function findNodeByPath(nodes, path, depth = 0) {
   } else {
     nodesToSend = nextNodes;
   }
-
   return findNodeByPath(nodesToSend, path, depth);
 }
 
 function relativePath(node, path) {
   let parts = customSplit(path, "/");
+
   parts.shift();
   parts.shift();
+
+  if (parts.length < 1) {
+    return console.log("Incorrect path format");
+  }
 
   let nodes = [node];
   maxDepth = parts.length;
-
   nodes = findNodeByPath(nodes, parts);
   result = [];
   return nodes;

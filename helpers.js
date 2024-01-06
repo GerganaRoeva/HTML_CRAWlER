@@ -34,12 +34,10 @@ function customTrim(str, symbol) {
   let end = str.length - 1;
 
   if (symbol === undefined) {
-    // Trim leading whitespace
     while (start <= end && isWhitespace(str[start])) {
       start++;
     }
 
-    // Trim trailing whitespace
     while (end >= start && isWhitespace(str[end])) {
       end--;
     }
@@ -53,9 +51,32 @@ function customTrim(str, symbol) {
     }
   }
 
-  // Extract the trimmed substring
-  const trimmed = str.substring(start, end + 1);
+  const trimmed = customSubstring(str, start, end + 1);
   return trimmed;
+}
+
+function customSubstring(str, start, end) {
+  if (end === undefined) {
+    end = str.length;
+  }
+
+  if (start < 0) {
+    start = Math.max(str.length + start, 0);
+  }
+
+  if (end < 0) {
+    end = Math.max(str.length + end, 0);
+  }
+
+  start = Math.min(Math.max(start, 0), str.length);
+  end = Math.min(Math.max(end, 0), str.length);
+
+  const result = [];
+  for (let i = start; i < end; i++) {
+    result.push(str[i]);
+  }
+
+  return result.join("");
 }
 
 function customSplit(str, separator) {
@@ -63,24 +84,85 @@ function customSplit(str, separator) {
   let startIndex = 0;
 
   for (let i = 0; i < str.length; i++) {
-    if (str.substring(i, i + separator.length) === separator) {
-      result.push(str.substring(startIndex, i));
+    if (customSubstring(str, i, i + separator.length) === separator) {
+      result.push(customSubstring(str, startIndex, i));
       startIndex = i + separator.length;
       i = startIndex - 1;
     }
   }
 
-  result.push(str.substring(startIndex)); // Add the remaining part after the last separator
+  result.push(customSubstring(str, startIndex)); // Add the remaining part after the last separator
 
   return result;
 }
 
+function customConcat(arr1, arr2) {
+  const result = [];
+
+  // Copy elements from the first array
+  for (let i = 0; i < arr1.length; i++) {
+    result.push(arr1[i]);
+  }
+
+  // Copy elements from the second array
+  for (let i = 0; i < arr2.length; i++) {
+    result.push(arr2[i]);
+  }
+
+  return result;
+}
+
+function customReplace(str, search, replacement) {
+  const parts = customSplit(str, search);
+  const result = parts.join(replacement);
+  return result;
+}
+
+function customIndexOf(str, search, startIndex = 0) {
+  // Handle negative startIndex
+  startIndex = Math.max(startIndex, 0);
+
+  for (let i = startIndex; i < str.length - search.length + 1; i++) {
+    // Check if the substring starting at index i matches the search string
+    let found = true;
+    for (let j = 0; j < search.length; j++) {
+      if (str[i + j] !== search[j]) {
+        found = false;
+        break;
+      }
+    }
+
+    if (found) {
+      return i; // Return the index if the substring is found
+    }
+  }
+
+  return -1; // Return -1 if the substring is not found
+}
+
+function customIncludes(str, search, startIndex = 0) {
+  // Use the customIndexOf function to check if the search string exists in the original string
+  return customIndexOf(str, search, startIndex) !== -1;
+}
+
 function isValidTagName(tagName) {
-  return validTagNames.includes(tagName);
+  for (const validName of validTagNames) {
+    if (tagName === validName) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function isTagSelfClosed(tagName) {
-  return selfClosingTags.includes(tagName);
+  for (const validName of selfClosingTags) {
+    if (tagName === validName) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export {
@@ -90,4 +172,9 @@ export {
   isTagSelfClosed,
   printNode,
   readHTMLFile,
+  customConcat,
+  customSubstring,
+  customReplace,
+  customIndexOf,
+  customIncludes,
 };
